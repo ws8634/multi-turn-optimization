@@ -1,0 +1,2 @@
+[console_scripts]
+context-trimmer = context_trimmer.cli:main
