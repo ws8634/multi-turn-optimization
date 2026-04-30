@@ -70,13 +70,21 @@ def validate_messages(messages: List[Message]) -> None:
         raise ValidationError(f"System message must be first, found at position {system_indices[0]}")
 
 
-def truncate_preview(content: str, max_chars: int = 80) -> str:
-    if len(content) <= max_chars:
+def truncate_preview(content: str, max_bytes: int = 80) -> str:
+    encoded = content.encode("utf-8")
+    if len(encoded) <= max_bytes:
         return content
-    preview = content[:max_chars]
-    while len(preview.encode("utf-8")) > 3 * max_chars:
-        preview = preview[:-1]
-    return preview + "..."
+
+    truncated = encoded[:max_bytes]
+
+    while len(truncated) > 0:
+        try:
+            preview = truncated.decode("utf-8")
+            return preview + "..."
+        except UnicodeDecodeError:
+            truncated = truncated[:-1]
+
+    return "..."
 
 
 def get_non_system_messages(messages: List[Message]) -> List[Message]:
