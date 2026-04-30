@@ -322,7 +322,7 @@ class TestContentTruncation:
         from context_trimmer.core import truncate_preview
 
         content = "x" * 100
-        preview = truncate_preview(content, max_chars=80)
+        preview = truncate_preview(content, max_bytes=80)
 
         assert len(preview) == 83
         assert preview.endswith("...")
@@ -331,6 +331,15 @@ class TestContentTruncation:
         from context_trimmer.core import truncate_preview
 
         content = "Short text"
-        preview = truncate_preview(content, max_chars=80)
+        preview = truncate_preview(content, max_bytes=80)
 
         assert preview == content
+
+    def test_multibyte_unicode_truncation(self):
+        from context_trimmer.core import truncate_preview
+
+        content = "你好世界" * 20
+        preview = truncate_preview(content, max_bytes=80)
+
+        assert len(preview.encode("utf-8")) <= 83
+        assert preview.endswith("...")
